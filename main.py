@@ -1,8 +1,9 @@
 import sys
-from PyQt5.QtWidgets import *
+from PySide6 import QtWidgets
 from Sheet import Sheet
 
-App = QApplication(sys.argv)
+
+app = QtWidgets.QApplication([])
 sheet = Sheet()
 sheet.show()
-sys.exit(App.exec())
+sys.exit(app.exec())

@@ -1,6 +1,9 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
+from PySide6.QtCore import *
+from PySide6.QtWidgets import *
+from PySide6.QtGui import *
+
+width = 800
+height = 600
 
 
 class Sheet(QMainWindow):
@@ -8,12 +11,11 @@ class Sheet(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Write notes on a staff")  # Window title
-        self.setGeometry(100, 100, 800, 600)  # Window geometry: x, y, w, h
+        self.setGeometry(100, 100, width, height)  # Window geometry: x, y, w, h
 
-        self.image = QImage(self.size(), QImage.Format_RGB32)   # Image object
-        self.image.fill(Qt.white)   # Paint it white
 
-        self.note_length = 4
+        self.note_length = 4    # Default note length
+
 
         # Menu bar
         main_menu = self.menuBar()
@@ -24,7 +26,7 @@ class Sheet(QMainWindow):
         # Menu: File: Export
         export_action = QAction("Export", self)
         file_menu.addAction(export_action)
-        export_action.triggered.connect(self.save)
+        export_action.triggered.connect(self.export)
 
         # Menu: File: Clear
         clear_action = QAction("Clear", self)
@@ -58,26 +60,31 @@ class Sheet(QMainWindow):
         play_menu.addAction(stop_action)
         stop_action.triggered.connect(self.stop)
 
-    def save(self):
-        print("Saved")
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            print("Sheet: Left button pressed")
+
+    def export(self):
+        print("Sheet: Exporting")
 
     def clear(self):
-        print("Cleared")
+        print("Sheet: Clearing")
 
     def set_ntoe_1(self):
-        print("Set note length: 1/1")
+        print("Sheet: Set note length: 1/1")
 
     def set_ntoe_2(self):
-        print("Set note length: 1/2")
+        print("Sheet: Set note length: 1/2")
 
     def set_ntoe_4(self):
-        print("Set note length: 1/4")
+        print("Sheet: Set note length: 1/4")
 
     def set_ntoe_8(self):
-        print("Set note length: 1/8")
+        print("Sheet: Set note length: 1/8")
 
     def play(self):
-        print("Playing")
+        print("Sheet: Playing")
 
     def stop(self):
-        print("Stop playing")
+        print("Sheet: Stop playing")
+
