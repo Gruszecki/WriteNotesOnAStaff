@@ -1,21 +1,23 @@
 from PySide6.QtCore import *
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
+from Frequency import Frequency
+import time
 
 width = 800
 height = 600
 
 
 class Sheet(QMainWindow):
-    def __init__(self):
+    def __init__(self, sound_provider):
         super().__init__()
 
         self.setWindowTitle("Write notes on a staff")  # Window title
         self.setGeometry(100, 100, width, height)  # Window geometry: x, y, w, h
 
-
         self.note_length = 4    # Default note length
 
+        self.sound_provider = sound_provider    # Object of the SoundProvider class
 
         # Menu bar
         main_menu = self.menuBar()
@@ -63,6 +65,7 @@ class Sheet(QMainWindow):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             print("Sheet: Left button pressed")
+            self.sound_provider.play_note(Frequency.C4, self.note_length)
 
     def export(self):
         print("Sheet: Exporting")
