@@ -1,6 +1,7 @@
 from PySide6.QtCore import *
-from PySide6.QtWidgets import *
 from PySide6.QtGui import *
+from PySide6.QtWidgets import *
+
 from Frequency import Frequency
 
 width = 800
@@ -49,6 +50,10 @@ class Sheet(QMainWindow):
         note_length_menu.addAction(note_8)
         note_8.triggered.connect(self.set_ntoe_8)
 
+        delete_note_action = QAction("Delete last note", self)
+        note_length_menu.addAction(delete_note_action)
+        delete_note_action.triggered.connect(self.delete_note)
+
         # Menu: Play
         play_action = QAction("Play", self)
         play_menu.addAction(play_action)
@@ -62,7 +67,6 @@ class Sheet(QMainWindow):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             print("Sheet: Left button pressed")
-            self.sound_provider.play_note(Frequency.C4, self.sound_provider.note_length)
 
     def export(self):
         print("Sheet: Exporting")
@@ -86,8 +90,13 @@ class Sheet(QMainWindow):
         print("Sheet: Set note length: 1/8")
         self.sound_provider.note_length = 8
 
+    def delete_note(self):
+        print("Sheet: Deleting last note")
+        self.sound_provider.delete_last_note()
+
     def play(self):
         print("Sheet: Playing")
+        self.sound_provider.play_melody()
 
     def stop(self):
         print("Sheet: Stop playing")

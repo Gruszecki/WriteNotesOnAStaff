@@ -1,8 +1,9 @@
 import sys
 from PySide6 import QtWidgets
+from pynput.keyboard import Listener
+
 from Sheet import Sheet
 from SoundProvider import SoundProvider
-from pynput.keyboard import Listener
 
 
 app = QtWidgets.QApplication(sys.argv)

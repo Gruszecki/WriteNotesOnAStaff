@@ -1,21 +1,27 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import simpleaudio as sa
+import time
 from pynput.keyboard import Key, Listener, KeyCode, Controller
-import matplotlib.pyplot as plt
 from scipy import signal
+
 from Frequency import Frequency
+from Note import Note
 
 
 class SoundProvider:
     def __init__(self):
         self.fs = 44100
-        self.sound_h = 4
+        self.octave = 4
         self.wave = 0  # 0: sine, 1: sawtooth, 2: square
         self.bpm = 120
         self.note_length = 4
+        self.melody = []
 
-    def play_note(self, freq, note_length):
-        note_length_s = (self.bpm / 60) / note_length
+    def play_note(self, sound, octave, note_length):
+        note_length_s = ((60 / self.bpm) * 4) / note_length
+        exp_build = f'Frequency.{sound}{octave}'    # Expression built for take frequency
+        freq = eval(exp_build)
 
         t_r = np.linspace(0, note_length_s, int(note_length_s * self.fs), endpoint=False)
         n_r = freq * t_r * 2 * np.pi
@@ -35,6 +41,17 @@ class SoundProvider:
 
         sa.play_buffer(audio_total, 1, 2, self.fs)
 
+    def play_melody(self):
+        for note in self.melody:
+            self.play_note(note.sound, note.octave, note.length)
+            time.sleep((self.bpm / 60) / note.length)
+
+    def delete_last_note(self):
+        if len(self.melody):
+            self.melody.pop()
+        else:
+            print("There is no note to delete")
+
     def is_piano_key(self, key):
         if key == KeyCode.from_char('a') or \
                 key == KeyCode.from_char('w') or \
@@ -52,14 +69,6 @@ class SoundProvider:
         else:
             return False
 
-        # match key:
-        #     case KeyCode.from_char('a') | KeyCode.from_char('w') | KeyCode.from_char('s') | KeyCode.from_char('e') | \
-        #          KeyCode.from_char('d') | KeyCode.from_char('f') | KeyCode.from_char('t') | KeyCode.from_char('g') | \
-        #          KeyCode.from_char('y') | KeyCode.from_char('h') | KeyCode.from_char('u') | KeyCode.from_char('j'):
-        #         return str(key)[1:-1]
-        #     case _:
-        #         return False
-
     def is_0to8_key(self, key):
         if key == KeyCode.from_char('0') or \
                 key == KeyCode.from_char('1') or \
@@ -74,29 +83,39 @@ class SoundProvider:
         else:
             return False
 
-        # match key:
-        #     case KeyCode.from_char('0') | KeyCode.from_char('1') | KeyCode.from_char('2') | KeyCode.from_char('3') | \
-        #          KeyCode.from_char('4') | KeyCode.from_char('5') | KeyCode.from_char('6') | KeyCode.from_char('7') | \
-        #          KeyCode.from_char('8') | KeyCode.from_char('9'):
-        #         return str(key)[1:-1]
-        #     case _:
-        #         return False
+    def is_play_button(self, key):
+        if key == KeyCode.from_char('p'):
+            return str(key)[1:-1]
+        else:
+            return False
 
     def on_press(self, key):
         piano_key = self.is_piano_key(key)
         tone_h = self.is_0to8_key(key)
+        play_melody = self.is_play_button(key)
 
         if piano_key:
-            exp_build = f'self.play_note(Frequency.{Frequency.key_coverity[piano_key]}{self.sound_h}, {self.note_length})'
-            eval(exp_build)
+            print("SoundProvider: Playing the sound")
+            self.play_note(Frequency.key_coverity[piano_key], self.octave, self.note_length)
+            self.melody.append(Note(Frequency.key_coverity[piano_key], self.octave, self.note_length))
         elif tone_h:
-            self.sound_h = int(tone_h)
+            print(f"SoundProvider: Changing octave to {tone_h}")
+            self.octave = int(tone_h)
+        elif play_melody:
+            print("SoundProvider: Playing melody")
+            self.play_melody()
         else:
-            if (key == Key.up or key == Key.right) and self.sound_h < 8:
-                self.sound_h += 1
-            elif (key == Key.down or key == Key.left) and self.sound_h > 0:
-                self.sound_h -= 1
+            if (key == Key.up or key == Key.right) and self.octave < 8:
+                print(f"SoundProvider: Changing octave to higher ({self.octave + 1})")
+                self.octave += 1
+            elif (key == Key.down or key == Key.left) and self.octave > 0:
+                print(f"SoundProvider: Changing octave to lower ({self.octave - 1})")
+                self.octave -= 1
+            elif Key.backspace:
+                print(f"SoundProvider: Deleting last note")
+                self.delete_last_note()
 
     def on_release(self, key):
-        if key == Key.esc:
-            return False
+        # if key == Key.esc:
+        #     return False
+        pass
