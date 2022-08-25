@@ -75,15 +75,19 @@ class Sheet(QMainWindow):
 
     def set_ntoe_1(self):
         print("Sheet: Set note length: 1/1")
+        self.note_length = 1
 
     def set_ntoe_2(self):
         print("Sheet: Set note length: 1/2")
+        self.note_length = 2
 
     def set_ntoe_4(self):
         print("Sheet: Set note length: 1/4")
+        self.note_length = 4
 
     def set_ntoe_8(self):
         print("Sheet: Set note length: 1/8")
+        self.note_length = 8
 
     def play(self):
         print("Sheet: Playing")
