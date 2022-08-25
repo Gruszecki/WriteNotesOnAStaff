@@ -2,8 +2,6 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 
-from Frequency import Frequency
-
 width = 800
 height = 600
 
@@ -14,7 +12,6 @@ class Sheet(QMainWindow):
 
         self.setWindowTitle("Write notes on a staff")  # Window title
         self.setGeometry(100, 100, width, height)  # Window geometry: x, y, w, h
-
         self.sound_provider = sound_provider    # Object of the SoundProvider class
 
         # Menu bar
@@ -64,15 +61,34 @@ class Sheet(QMainWindow):
         play_menu.addAction(stop_action)
         stop_action.triggered.connect(self.stop)
 
+        # Text area
+        self.text_area = QTextEdit(self)
+        self.text_area.setReadOnly(True)
+        self.text_area.move(0, 20)
+        self.text_area.setMinimumSize(width, height-20)
+        self.text_area.setFontFamily('Courier')
+        self.text_area.setFontPointSize(10)
+        self.text_area.insertPlainText('Sound Length\n')
+
+        self.sound_provider.text_area = self.text_area
+
+        # Control map
+        control_label = QLabel(self)
+        control_pixmap = QPixmap('control.png')
+        control_label.setPixmap(control_pixmap)
+        self.setCentralWidget(control_label)
+        control_label.move(100,40)
+
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            print("Sheet: Left button pressed")
+            pass
 
     def export(self):
         print("Sheet: Exporting")
 
     def clear(self):
         print("Sheet: Clearing")
+        self.sound_provider.clear_melody_n_text()
 
     def set_ntoe_1(self):
         print("Sheet: Set note length: 1/1")
@@ -100,3 +116,4 @@ class Sheet(QMainWindow):
 
     def stop(self):
         print("Sheet: Stop playing")
+

@@ -2,7 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import simpleaudio as sa
 import time
+
 from pynput.keyboard import Key, Listener, KeyCode, Controller
+from PySide6.QtWidgets import *
 from scipy import signal
 
 from Frequency import Frequency
@@ -14,6 +16,9 @@ class Note:
         self.octave = octave
         self.length = length
 
+    def __str__(self):
+        return f'{self.sound}{self.octave}'.ljust(6) + f'1/{self.length}\n'
+
 
 class SoundProvider:
     def __init__(self):
@@ -23,6 +28,7 @@ class SoundProvider:
         self.bpm = 120
         self.note_length = 4
         self.melody = []
+        self.text_area = None
 
     def play_note(self, sound, octave, note_length):
         note_length_s = ((60 / self.bpm) * 4) / note_length
@@ -51,12 +57,6 @@ class SoundProvider:
         for note in self.melody:
             self.play_note(note.sound, note.octave, note.length)
             time.sleep((self.bpm / 60) / note.length)
-
-    def delete_last_note(self):
-        if len(self.melody):
-            self.melody.pop()
-        else:
-            print("There is no note to delete")
 
     def is_piano_key(self, key):
         if key == KeyCode.from_char('a') or \
@@ -101,9 +101,13 @@ class SoundProvider:
         play_melody = self.is_play_button(key)
 
         if piano_key:
-            print("SoundProvider: Playing the sound")
+            print(f"SoundProvider: Playing the sound ({Frequency.key_coverity[piano_key]}{self.octave} 1/{self.note_length})")
             self.play_note(Frequency.key_coverity[piano_key], self.octave, self.note_length)
-            self.melody.append(Note(Frequency.key_coverity[piano_key], self.octave, self.note_length))
+
+            note = Note(Frequency.key_coverity[piano_key], self.octave, self.note_length)
+            self.melody.append(note)
+            self.insert_text_to_text_area(note.__str__())
+
         elif tone_h:
             print(f"SoundProvider: Changing octave to {tone_h}")
             self.octave = int(tone_h)
@@ -118,8 +122,27 @@ class SoundProvider:
                 print(f"SoundProvider: Changing octave to lower ({self.octave - 1})")
                 self.octave -= 1
             elif key == Key.backspace:
-                print(f"SoundProvider: Deleting last note")
-                self.delete_last_note()
+                print("SoundProvider: Please use Note length menu in menu bar")
+                # print("SoundProvider: Deleting last note")
+                # self.delete_last_note()
 
     def on_release(self, key):
         pass
+
+    def insert_text_to_text_area(self, text):
+        self.text_area.insertPlainText(text)
+
+    def clear_melody_n_text(self):
+        self.melody = []
+        self.text_area.clear()
+        self.text_area.insertPlainText('Sound Length\n')
+
+    def delete_last_note(self):
+        if len(self.melody):
+            self.melody.pop()
+            self.text_area.clear()
+            self.text_area.insertPlainText('Sound Length\n')
+            for note in self.melody:
+                self.insert_text_to_text_area(note.__str__())
+        else:
+            print("There is no note to delete")
