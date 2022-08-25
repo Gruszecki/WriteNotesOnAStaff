@@ -6,7 +6,13 @@ from pynput.keyboard import Key, Listener, KeyCode, Controller
 from scipy import signal
 
 from Frequency import Frequency
-from Note import Note
+
+
+class Note:
+    def __init__(self, sound, octave, length):
+        self.sound = sound
+        self.octave = octave
+        self.length = length
 
 
 class SoundProvider:
@@ -111,11 +117,9 @@ class SoundProvider:
             elif (key == Key.down or key == Key.left) and self.octave > 0:
                 print(f"SoundProvider: Changing octave to lower ({self.octave - 1})")
                 self.octave -= 1
-            elif Key.backspace:
+            elif key == Key.backspace:
                 print(f"SoundProvider: Deleting last note")
                 self.delete_last_note()
 
     def on_release(self, key):
-        # if key == Key.esc:
-        #     return False
         pass

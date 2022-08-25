@@ -100,4 +100,3 @@ class Sheet(QMainWindow):
 
     def stop(self):
         print("Sheet: Stop playing")
-
