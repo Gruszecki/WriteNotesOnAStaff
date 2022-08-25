@@ -73,11 +73,10 @@ class Sheet(QMainWindow):
         self.sound_provider.text_area = self.text_area
 
         # Control map
-        control_label = QLabel(self)
-        control_pixmap = QPixmap('control.png')
-        control_label.setPixmap(control_pixmap)
-        self.setCentralWidget(control_label)
-        control_label.move(100,40)
+        # control_label = QLabel(self)
+        # control_pixmap = QPixmap('control.png')
+        # control_label.setPixmap(control_pixmap)
+        # self.setCentralWidget(control_label)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
